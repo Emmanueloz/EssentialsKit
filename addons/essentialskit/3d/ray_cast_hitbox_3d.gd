@@ -1,4 +1,4 @@
-class_name RayCast3DHitbox
+class_name RayCastHitbox3D
 extends RayCast3D
 
 @export_group("Damage Settings")
@@ -7,22 +7,21 @@ extends RayCast3D
 
 @export_group("Life Cycle")
 @export var auto_remove: bool = true
-@export var wait_time: float = 5
+@export var wait_time: float = 5.0
 
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# Iniciamos la cuenta regresiva si auto_remove está activo
 	if auto_remove:
 		_start_self_destruct()
 
 func _start_self_destruct() -> void:
-	# El atajo 'await' es ideal aquí: espera y luego borra
 	await get_tree().create_timer(wait_time).timeout
-	queue_free()
+	if is_instance_valid(self):
+		queue_free()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	var target = get_collider()
-	if target is HealthEntity:
-		target.take_damage(10)
-	
+	if target:
+		var health_comp = HealthComponent.get_health_component(target as Node)
+		if health_comp and damage:
+			var final_damage = damage.damage * multiplier
+			health_comp.take_damage(final_damage)

@@ -1,0 +1,132 @@
+[gd_scene format=3 uid="uid://main3dscene"]
+
+[ext_resource type="Script" uid="uid://dpg8t3uda3gdt" path="res://src/3d/character_3d.gd" id="1_char"]
+[ext_resource type="Script" uid="uid://dd3kxrn2m73gs" path="res://addons/essentialskit/components/health_component.gd" id="2_hc"]
+[ext_resource type="Script" uid="uid://jnp0fjecbgb7" path="res://addons/essentialskit/3d/damage_hitbox_3d.gd" id="3_dh"]
+[ext_resource type="Script" uid="uid://pful42l6rat6" path="res://addons/essentialskit/3d/ongoing_damage_hitbox_3d.gd" id="4_odh"]
+[ext_resource type="Script" uid="uid://1nvqe3wnrski" path="res://addons/essentialskit/3d/ray_cast_hitbox_3d.gd" id="5_rch"]
+[ext_resource type="Script" uid="uid://dqnbvms5ia4ay" path="res://addons/essentialskit/resources/damage_type.gd" id="6_dt"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fyndt"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_kmhfv"]
+sky_material = SubResource("ProceduralSkyMaterial_fyndt")
+
+[sub_resource type="Environment" id="Environment_rlaii"]
+background_mode = 2
+sky = SubResource("Sky_kmhfv")
+tonemap_mode = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5q4o7"]
+size = Vector2(20, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5q4o7"]
+size = Vector3(20, 0.2, 20)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7nbua"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3cfgd"]
+albedo_color = Color(0.4509804, 0.80784315, 0.34901962, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_7nbua"]
+material = SubResource("StandardMaterial3D_3cfgd")
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kmhfv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kmhfv"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rlaii"]
+material = SubResource("StandardMaterial3D_kmhfv")
+
+[sub_resource type="Resource" id="Resource_rlaii"]
+script = ExtResource("6_dt")
+name = "Prueba"
+damage = 40.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_fyndt"]
+size = Vector3(1.677002, 1.9815674, 2.1900024)
+
+[sub_resource type="Resource" id="Resource_fyndt"]
+script = ExtResource("6_dt")
+name = "Fuego"
+damage = 20.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kmhfv"]
+size = Vector3(2, 0.2, 2)
+
+[node name="Main3D" type="Node3D" unique_id=1225165554]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1680532029]
+environment = SubResource("Environment_rlaii")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=289093783]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2023478328]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.811281, 10.006871)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1651760707]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=1064293627]
+mesh = SubResource("PlaneMesh_5q4o7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1804319502]
+shape = SubResource("BoxShape3D_5q4o7")
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=2036682715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4187884, 1.7021817, 0)
+script = ExtResource("1_char")
+
+[node name="HealthComponent" type="Node" parent="Player" unique_id=665908168]
+script = ExtResource("2_hc")
+max_health = 3000.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1753334097]
+shape = SubResource("CapsuleShape3D_7nbua")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=539162074]
+mesh = SubResource("CapsuleMesh_7nbua")
+
+[node name="Enemy" type="CharacterBody3D" parent="." unique_id=1497726735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0543723, 1.0092676, -2.597332)
+
+[node name="HealthComponent" type="Node" parent="Enemy" unique_id=317028992]
+script = ExtResource("2_hc")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy" unique_id=1186412142]
+shape = SubResource("CapsuleShape3D_kmhfv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemy" unique_id=1424439155]
+mesh = SubResource("CapsuleMesh_rlaii")
+
+[node name="DamageHitbox3D" type="Area3D" parent="." unique_id=2084918120]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013226271, 0.8325286, -0.030557513)
+script = ExtResource("3_dh")
+damage = SubResource("Resource_rlaii")
+auto_remove = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageHitbox3D" unique_id=821613722]
+shape = SubResource("BoxShape3D_fyndt")
+debug_color = Color(1.92523e-07, 0.3713037, 0.4351121, 1)
+
+[node name="RayCastHitbox3D" type="RayCast3D" parent="." unique_id=1750618651]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.527468, 1.2460299, 0.53591895)
+target_position = Vector3(1, 0, 0)
+debug_shape_thickness = 5
+script = ExtResource("5_rch")
+damage = SubResource("Resource_rlaii")
+auto_remove = false
+
+[node name="OngoingDamageHitbox3D" type="Area3D" parent="." unique_id=611397030]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.631005, 1, 0)
+script = ExtResource("4_odh")
+damage = SubResource("Resource_fyndt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OngoingDamageHitbox3D" unique_id=167563965]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.90161425, 1.4909658)
+shape = SubResource("BoxShape3D_kmhfv")
+debug_color = Color(0.6294472, 0.12242674, 0.37460285, 1)
