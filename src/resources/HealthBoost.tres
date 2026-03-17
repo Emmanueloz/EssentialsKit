@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="HealthModifier" format=3 uid="uid://cx8x3xne3t6o3"]
+
+[ext_resource type="Script" uid="uid://bki7ha4qf5x16" path="res://addons/essentialskit/resources/health_modifier.gd" id="1_55xh3"]
+
+[resource]
+script = ExtResource("1_55xh3")
+value = 50.0
+name = "Health Boost"
+duration = 15.0
+stack_type = 1
