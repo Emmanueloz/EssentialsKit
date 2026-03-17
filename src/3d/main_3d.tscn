@@ -2,10 +2,16 @@
 
 [ext_resource type="Script" uid="uid://dpg8t3uda3gdt" path="res://src/3d/character_3d.gd" id="1_char"]
 [ext_resource type="Script" uid="uid://dd3kxrn2m73gs" path="res://addons/essentialskit/components/health_component.gd" id="2_hc"]
+[ext_resource type="Script" uid="uid://6uenlcvaf3ae" path="res://addons/essentialskit/components/defense_component.gd" id="3_cblx1"]
 [ext_resource type="Script" uid="uid://jnp0fjecbgb7" path="res://addons/essentialskit/3d/damage_hitbox_3d.gd" id="3_dh"]
 [ext_resource type="Script" uid="uid://pful42l6rat6" path="res://addons/essentialskit/3d/ongoing_damage_hitbox_3d.gd" id="4_odh"]
 [ext_resource type="Script" uid="uid://1nvqe3wnrski" path="res://addons/essentialskit/3d/ray_cast_hitbox_3d.gd" id="5_rch"]
-[ext_resource type="Script" uid="uid://dqnbvms5ia4ay" path="res://addons/essentialskit/resources/damage_type.gd" id="6_dt"]
+[ext_resource type="Script" uid="uid://d0cambpqw1nug" path="res://addons/essentialskit/3d/hurtbox_3d.gd" id="6_hb"]
+[ext_resource type="Resource" uid="uid://cx8x3xne3t6o3" path="res://src/resources/HealthBoost.tres" id="6_so465"]
+[ext_resource type="Script" uid="uid://bup8h1muvrhcm" path="res://addons/essentialskit/3d/buff_zone_3d.gd" id="7_bz"]
+[ext_resource type="Resource" uid="uid://4rhg7kve8ey3" path="res://src/resources/Curation.tres" id="7_cblx1"]
+[ext_resource type="Script" uid="uid://dqnbvms5ia4ay" path="res://addons/essentialskit/resources/damage_type.gd" id="8_dt"]
+[ext_resource type="Script" uid="uid://bki7ha4qf5x16" path="res://addons/essentialskit/resources/health_modifier.gd" id="9_hm"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_fyndt"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
@@ -20,113 +26,242 @@ sky = SubResource("Sky_kmhfv")
 tonemap_mode = 2
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_5q4o7"]
-size = Vector2(20, 20)
+size = Vector2(40, 40)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5q4o7"]
-size = Vector3(20, 0.2, 20)
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(40, 0.2, 40)
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7nbua"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_player"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3cfgd"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_player"]
 albedo_color = Color(0.4509804, 0.80784315, 0.34901962, 1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_7nbua"]
-material = SubResource("StandardMaterial3D_3cfgd")
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_player"]
+material = SubResource("StandardMaterial3D_player")
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kmhfv"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_head"]
+radius = 0.4
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kmhfv"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_head"]
+albedo_color = Color(1, 0.9, 0.5, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+material = SubResource("StandardMaterial3D_head")
+radius = 0.4
+height = 0.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cblx1"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_enemy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_enemy"]
 albedo_color = Color(1, 0, 0, 1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_rlaii"]
-material = SubResource("StandardMaterial3D_kmhfv")
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_enemy"]
+material = SubResource("StandardMaterial3D_enemy")
 
-[sub_resource type="Resource" id="Resource_rlaii"]
-script = ExtResource("6_dt")
-name = "Prueba"
-damage = 40.0
+[sub_resource type="BoxShape3D" id="BoxShape3D_buff_zone"]
+size = Vector3(2, 1, 2)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_fyndt"]
-size = Vector3(1.677002, 1.9815674, 2.1900024)
+[sub_resource type="Resource" id="Resource_damage_basic"]
+script = ExtResource("8_dt")
+name = "Basic Attack"
+damage = 25.0
 
-[sub_resource type="Resource" id="Resource_fyndt"]
-script = ExtResource("6_dt")
-name = "Fuego"
-damage = 20.0
+[sub_resource type="BoxShape3D" id="BoxShape3D_tmayi"]
+size = Vector3(2, 1, 2)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_kmhfv"]
-size = Vector3(2, 0.2, 2)
+[sub_resource type="Resource" id="Resource_damage_continuous"]
+script = ExtResource("8_dt")
+name = "Laser Beam"
+damage = 10.0
 
-[node name="Main3D" type="Node3D" unique_id=1225165554]
+[sub_resource type="Resource" id="Resource_damage_projectile"]
+script = ExtResource("8_dt")
+name = "Projectile"
+damage = 30.0
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1680532029]
+[sub_resource type="Resource" id="Resource_damage_fire"]
+script = ExtResource("8_dt")
+name = "Fire Damage"
+damage = 5.0
+critical_multiplier = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_hitbox"]
+size = Vector3(2, 1, 2)
+
+[node name="Main3D" type="Node3D" unique_id=708992787]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=603571764]
 environment = SubResource("Environment_rlaii")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=289093783]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1560427353]
 transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=2023478328]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.811281, 10.006871)
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1392210956]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2725306, 7.70617)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1651760707]
+[node name="Floor" type="StaticBody3D" parent="." unique_id=912718392]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=1064293627]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor" unique_id=822860660]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.019226074, 0.03224373, 0.04055786)
 mesh = SubResource("PlaneMesh_5q4o7")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1804319502]
-shape = SubResource("BoxShape3D_5q4o7")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor" unique_id=1254200002]
+shape = SubResource("BoxShape3D_floor")
 
-[node name="Player" type="CharacterBody3D" parent="." unique_id=2036682715]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4187884, 1.7021817, 0)
+[node name="Player" type="CharacterBody3D" parent="." unique_id=1344872636]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 2, 0)
 script = ExtResource("1_char")
 
-[node name="HealthComponent" type="Node" parent="Player" unique_id=665908168]
+[node name="HealthComponent" type="Node" parent="Player" unique_id=1344872637]
 script = ExtResource("2_hc")
 max_health = 3000.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1753334097]
-shape = SubResource("CapsuleShape3D_7nbua")
+[node name="DefenseComponent" type="Node" parent="Player/HealthComponent" unique_id=1533550613]
+script = ExtResource("3_cblx1")
+defense_value = 0.5
+auto_remove = false
+metadata/_custom_type_script = "uid://6uenlcvaf3ae"
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=539162074]
-mesh = SubResource("CapsuleMesh_7nbua")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=257977986]
+shape = SubResource("CapsuleShape3D_player")
 
-[node name="Enemy" type="CharacterBody3D" parent="." unique_id=1497726735]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.0543723, 1.0092676, -2.597332)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player" unique_id=1807953305]
+mesh = SubResource("CapsuleMesh_player")
 
-[node name="HealthComponent" type="Node" parent="Enemy" unique_id=317028992]
+[node name="HeadHurtbox" type="Area3D" parent="Player" unique_id=224679706]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+script = ExtResource("6_hb")
+zone_name = "head"
+damage_multiplier = 2.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/HeadHurtbox" unique_id=1000327176]
+shape = SubResource("SphereShape3D_head")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/HeadHurtbox" unique_id=32103492]
+mesh = SubResource("SphereMesh_head")
+
+[node name="BodyHurtbox" type="Area3D" parent="Player" unique_id=1334509278]
+visible = false
+script = ExtResource("6_hb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/BodyHurtbox" unique_id=2886188]
+shape = SubResource("CapsuleShape3D_cblx1")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="Label3D" type="Label3D" parent="Player" unique_id=670127066]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8217015, 0)
+billboard = 2
+text = "0"
+font_size = 80
+
+[node name="Enemy" type="CharacterBody3D" parent="." unique_id=277788867]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 0)
+
+[node name="HealthComponent" type="Node" parent="Enemy" unique_id=277788868]
 script = ExtResource("2_hc")
+max_health = 150.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy" unique_id=1186412142]
-shape = SubResource("CapsuleShape3D_kmhfv")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy" unique_id=375778637]
+shape = SubResource("CapsuleShape3D_enemy")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemy" unique_id=1424439155]
-mesh = SubResource("CapsuleMesh_rlaii")
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemy" unique_id=1904612642]
+mesh = SubResource("CapsuleMesh_enemy")
 
-[node name="DamageHitbox3D" type="Area3D" parent="." unique_id=2084918120]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013226271, 0.8325286, -0.030557513)
+[node name="BodyHurtbox" type="Area3D" parent="Enemy" unique_id=1303552383]
+script = ExtResource("6_hb")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemy/BodyHurtbox" unique_id=1256391444]
+shape = SubResource("CapsuleShape3D_enemy")
+
+[node name="Label" type="Label" parent="." unique_id=992824361]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 500.0
+offset_bottom = 250.0
+text = "CONTROLS:
+Arrow Keys - Move
+Space - Jump
+
+HURTBOXES (Head = x2 damage):
+- Player has Head (x2) and Body (x1)
+- Headshots deal DOUBLE damage!
+
+RAYCAST HITBOX TYPES:
+1. Basic (Orange): Single hit, stays active
+2. Continuous (Red): Damage every 0.5s while hitting
+3. Projectile (Purple): Disappears on hit (auto_remove_on_hit)
+
+BUFF ZONE (Green):
+- Walk in to get Health Boost (+50 max HP)
+- Walk out to lose it
+
+DAMAGE ZONES:
+- Orange Area: Basic damage
+- Red Ray: Continuous laser damage
+- Purple Ray: Projectile (one hit, then disappears)
+- Purple Area: Fire ongoing damage"
+
+[node name="BuffZone3D" type="Area3D" parent="." unique_id=175783646]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68784094, 0.74715185)
+script = ExtResource("7_bz")
+modifiers = Array[ExtResource("9_hm")]([ExtResource("6_so465"), ExtResource("7_cblx1")])
+remove_on_exit = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BuffZone3D" unique_id=256521449]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2312969, 3.2037778)
+shape = SubResource("BoxShape3D_buff_zone")
+debug_color = Color(0, 1, 0, 1)
+
+[node name="DamageHitbox3D2" type="Area3D" parent="." unique_id=13160345]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3663464, 0.5778413, -6.4325547)
 script = ExtResource("3_dh")
-damage = SubResource("Resource_rlaii")
+damage = SubResource("Resource_damage_basic")
+auto_remove = false
+auto_remove_on_hit = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageHitbox3D2" unique_id=424964224]
+shape = SubResource("BoxShape3D_tmayi")
+debug_color = Color(0.7212877, 0.0029321252, 0.9661588, 1)
+
+[node name="DamageHitbox3D" type="Area3D" parent="." unique_id=2061801312]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7879176, 0.82665396, -2.4359827)
+script = ExtResource("3_dh")
+damage = SubResource("Resource_damage_basic")
 auto_remove = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageHitbox3D" unique_id=821613722]
-shape = SubResource("BoxShape3D_fyndt")
-debug_color = Color(1.92523e-07, 0.3713037, 0.4351121, 1)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DamageHitbox3D" unique_id=21462659]
+shape = SubResource("BoxShape3D_tmayi")
+debug_color = Color(0.7212877, 0.0029321252, 0.9661588, 1)
 
-[node name="RayCastHitbox3D" type="RayCast3D" parent="." unique_id=1750618651]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.527468, 1.2460299, 0.53591895)
-target_position = Vector3(1, 0, 0)
+[node name="RayCastHitbox3D_Continuous" type="RayCast3D" parent="." unique_id=1893760034]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.151344, 0.87003803, 1.1190732)
+target_position = Vector3(2, 0, 0)
 debug_shape_thickness = 5
 script = ExtResource("5_rch")
-damage = SubResource("Resource_rlaii")
+damage = SubResource("Resource_damage_continuous")
 auto_remove = false
+can_hit_same_target = true
+continuous_damage = true
+damage_interval = 0.5
 
-[node name="OngoingDamageHitbox3D" type="Area3D" parent="." unique_id=611397030]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.631005, 1, 0)
+[node name="RayCastHitbox3D_Projectile" type="RayCast3D" parent="." unique_id=598882489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9046106, 0.8534982, 0.5308161)
+target_position = Vector3(2, 0, 0)
+debug_shape_thickness = 5
+script = ExtResource("5_rch")
+damage = SubResource("Resource_damage_projectile")
+auto_remove = false
+auto_remove_on_hit = true
+
+[node name="OngoingDamageHitbox3D" type="Area3D" parent="." unique_id=1516804768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2760653, 0.41563606, -2.8333387)
 script = ExtResource("4_odh")
-damage = SubResource("Resource_fyndt")
+damage = SubResource("Resource_damage_fire")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="OngoingDamageHitbox3D" unique_id=167563965]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.90161425, 1.4909658)
-shape = SubResource("BoxShape3D_kmhfv")
-debug_color = Color(0.6294472, 0.12242674, 0.37460285, 1)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OngoingDamageHitbox3D" unique_id=1500028953]
+shape = SubResource("BoxShape3D_hitbox")
+debug_color = Color(1, 0, 0, 1)
